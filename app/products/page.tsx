@@ -1,13 +1,15 @@
 'use client';
+import { useEffect, useState } from "react";
+
 import { ProductDialog } from "@/components/dialogs/ProductDialog";
 import { UploadDialog } from "@/components/dialogs/UploadDialog";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
 import { Product } from "@domain/entities/Product";
+import { mapApiProductToProduct } from "@domain/mappers/ProductMapper";
 
 import { ProductRepository } from "@infra/http/repositories/ProductRepository";
 
@@ -18,11 +20,7 @@ async function getData(): Promise<Product[]> {
     console.error("Error fetching products:", productsList.error);
     return [];
   }
-  
-  return productsList.data!.map(product => ({
-    ...product,
-    categoryId: product.category_id,
-  }));
+  return productsList.data!.map(mapApiProductToProduct);
 }
 
 export default function ProductsPage() {
@@ -48,7 +46,7 @@ export default function ProductsPage() {
       {loading ? (
         <p>Loading...</p>
       ) : (
-          <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} />
       )}
 
       <ProductDialog open={openProductDialog} onOpenChange={setOpenProductDialog} />

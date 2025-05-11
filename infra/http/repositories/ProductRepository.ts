@@ -1,11 +1,13 @@
+import { apiClient } from '@/infra/http/api';
+
 import { Product } from "@domain/entities/Product";
 import { IProductRepository } from "@domain/repositories/IProductRepository";
-import { apiClient } from '@/infra/http/api';
 import { ApiResponse } from "@domain/repositories/Response";
+import { ApiProduct } from "@domain/entities/ApiProduct";
 
 export class ProductRepository implements IProductRepository {
-  async findAll(): Promise<ApiResponse<Product[]>> {
-    try {
+  async findAll(): Promise<ApiResponse<ApiProduct[]>> {
+   try {
       const data = await apiClient.get("/products");
       return {success: true, data}
       
