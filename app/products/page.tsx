@@ -60,7 +60,7 @@ export default function ProductsPage() {
           if (!open) reloadData();
         }} 
       />
-      <UploadDialog open={openUploadDialog} onOpenChange={setOpenUploadDialog} />
+      <UploadDialog open={openUploadDialog} onOpenChangeAction={setOpenUploadDialog} />
     </div>
   );
 }

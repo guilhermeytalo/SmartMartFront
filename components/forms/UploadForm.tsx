@@ -1,18 +1,19 @@
 'use client';
-import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { parseCSVToProducts } from '@/lib/csvParser';
+import { useImportProducts } from '@app/use-cases/useImportProducts';
+import { useRef, useState } from 'react';
 
 interface Props {
-  onSubmitSuccess: () => void;
+  onSubmitSuccessAction: () => void;
 }
 
-export function UploadForm({ onSubmitSuccess }: Props) {
+export function UploadForm({ onSubmitSuccessAction }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const importProducts = useImportProducts();
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,14 +26,13 @@ export function UploadForm({ onSubmitSuccess }: Props) {
 
     setError(null);
     setLoading(true);
-
+    debugger
     try {
-      const products = await parseCSVToProducts(file);
-      console.log('Produtos importados do CSV:', products);
+      const formData = new FormData();
+      formData.append('file', file);
 
-      // await createProductsBatch(products)
-
-      onSubmitSuccess();
+      await importProducts(formData)
+      onSubmitSuccessAction();
     } catch (err) {
       setError('Erro ao processar o arquivo. Verifique se o CSV está no formato correto.');
     } finally {

@@ -99,7 +99,6 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
         };
       }
       
-      console.log('Dados a serem enviados:', productData);
       const response = await productRepo(productData);
 
       if (response) {

@@ -13,13 +13,16 @@ class ApiClient {
   }
 
   async post(endpoint: string, body: any) {
+    const isFormData = body instanceof FormData;
+
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
-      headers: {
+      headers: isFormData ? undefined : {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: isFormData ? body : JSON.stringify(body),
     });
+
     return this.handleResponse(response);
   }
 

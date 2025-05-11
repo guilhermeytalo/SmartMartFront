@@ -4,17 +4,17 @@ import { UploadForm } from "@/components/forms/UploadForm";
 
 interface Props {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChangeAction: (open: boolean) => void;
 }
 
-export function UploadDialog({ open, onOpenChange }: Props) {
+export function UploadDialog({ open, onOpenChangeAction }: Props) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Importar Produtos via CSV</DialogTitle>
         </DialogHeader>
-        <UploadForm onSubmitSuccess={() => onOpenChange(false)} />
+        <UploadForm onSubmitSuccessAction={() => (false)} />
       </DialogContent>
     </Dialog>
   );
