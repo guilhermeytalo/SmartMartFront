@@ -1,9 +1,10 @@
 import { apiClient } from '@/infra/http/api';
 
+import { ApiProduct } from "@domain/entities/ApiProduct";
 import { Product } from "@domain/entities/Product";
 import { IProductRepository } from "@domain/repositories/IProductRepository";
 import { ApiResponse } from "@domain/repositories/Response";
-import { ApiProduct } from "@domain/entities/ApiProduct";
+
 
 export class ProductRepository implements IProductRepository {
   async findAll(): Promise<ApiResponse<ApiProduct[]>> {
@@ -17,15 +18,15 @@ export class ProductRepository implements IProductRepository {
     }
   }
 
-  async create(product: Omit<Product, "id">): Promise<ApiResponse<Product>> {
-    try {
-      const newProduct = { ...product, id: Date.now() };
-      return { success: true, data: newProduct };
-    } catch (error) {
-      console.error("Erro ao criar os produto(s):", error);
-      return { success: false, error: "Erro ao criar os produto(s)." };
-    }
+async create(product: Omit<Product, "id">): Promise<ApiResponse<Product>> {
+  try {
+    const response = await apiClient.post("/products", product);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Erro ao criar os produto(s):", error);
+    return { success: false, error: "Erro ao criar os produto(s)." };
   }
+}
 
   async importFromCSV(products: Product[]): Promise<ApiResponse<void>> {
     try {

@@ -5,6 +5,7 @@ export class CreateProductService {
   constructor(private readonly productRepo: IProductRepository) {}
 
   async execute(data: Omit<Product, "id">): Promise<Product> {
-    return await this.productRepo.create(data);
+    const response = await this.productRepo.create(data);
+    return response.data!;
   }
 }

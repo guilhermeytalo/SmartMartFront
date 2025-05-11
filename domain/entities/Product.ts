@@ -1,3 +1,5 @@
+import { Category } from "./Category";
+
 export interface Product {
   id: number;
   name: string;
@@ -8,3 +10,12 @@ export interface Product {
   quantity: number;
   profit: number;
 }
+
+export type ProductFormData = {
+  name: string;
+  description: string;
+  price: number;
+  brand: string;
+  quantity: number;
+  category: Category;
+};

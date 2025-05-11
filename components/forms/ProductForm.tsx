@@ -1,13 +1,24 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '@/components/ui/input';
+
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
-import categoriesMock from '@/mock/categories.json';
+
+import { useCreateProduct } from '@app/use-cases/useCreateProduct';
+
+import { CategoryRepository } from '@infra/http/repositories/CategoryRepository';
+
+const categorySchema = z.object({
+  id: z.number().int().optional(),
+  name: z.string().min(1, 'Nome da categoria é obrigatório'),
+  description: z.string().optional(),
+});
 
 const productSchema = z.object({
   name: z.string().min(1, 'Nome obrigatório'),
@@ -15,7 +26,7 @@ const productSchema = z.object({
   price: z.coerce.number().positive('Preço deve ser maior que 0'),
   brand: z.string().min(1, 'Marca obrigatória'),
   quantity: z.coerce.number().int().nonnegative('Quantidade deve ser positiva'),
-  category_id: z.coerce.number().int(),
+  category: categorySchema,
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -29,23 +40,64 @@ export function ProductForm({ onSubmitSuccess }: Props) {
     register,
     handleSubmit,
     setValue,
+    watch,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
+    defaultValues: {
+      category: {
+        id: undefined,
+        name: '',
+        description: ''
+      }
+    }
   });
 
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [categoryOption, setCategoryOption] = useState<'existing' | 'new'>('existing');
 
   useEffect(() => {
-    setCategories(categoriesMock);
+    const fetchCategories = async () => {
+      const categoryRepo = new CategoryRepository();
+      const response = await categoryRepo.findAll();
+
+      if (response.success && response.data) {
+        setCategories(response.data.filter((category: { id?: number }) => category.id !== undefined) as { id: number; name: string }[]);
+      } else {
+        console.error(response.error || 'Erro ao carregar categorias');
+      }
+    };
+
+    fetchCategories();
   }, []);
 
+  const productRepo = useCreateProduct();
   const onSubmit = async (data: ProductFormData) => {
-    console.log('Produto enviado:', data);
-    reset();
-    onSubmitSuccess();
+    try {
+      if (data.category.id) {
+        delete data.category.name;
+        delete data.category.description;
+      }
+      else if (data.category.name && !data.category.id) {
+        delete data.category.id;
+        delete data.category.description;
+      }
+
+      const response = await productRepo(data);
+
+      if (response) {
+        reset();
+        onSubmitSuccess();
+      } else {
+        console.error('Erro ao criar produto:');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar formulário:', error);
+    }
   };
+
+  const selectedCategoryId = watch('category.id');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -81,21 +133,63 @@ export function ProductForm({ onSubmitSuccess }: Props) {
         {errors.brand && <p className="text-sm text-red-500">{errors.brand.message}</p>}
       </div>
 
-      <div>
-        <Label>Categoria</Label>
-        <Select onValueChange={(value) => setValue('category_id', Number(value))}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione uma categoria" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={String(cat.id)}>
-                {cat.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.category_id && <p className="text-sm text-red-500">{errors.category_id.message}</p>}
+      <div className="space-y-4">
+        <Label>Tipo de Categoria</Label>
+        <RadioGroup
+          defaultValue="existing"
+          className="flex gap-4"
+          onValueChange={(value: 'existing' | 'new') => setCategoryOption(value)}
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="existing" id="existing" />
+            <Label htmlFor="existing">Categoria Existente</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="new" id="new" />
+            <Label htmlFor="new">Nova Categoria</Label>
+          </div>
+        </RadioGroup>
+
+        {categoryOption === 'existing' ? (
+          <div>
+            <Label>Categoria</Label>
+            <Select
+              onValueChange={(value) => {
+                setValue('category.id', Number(value));
+                const selectedCat = categories.find(cat => cat.id === Number(value));
+                if (selectedCat) {
+                  setValue('category.name', selectedCat.name);
+                }
+              }}
+              value={selectedCategoryId ? String(selectedCategoryId) : undefined}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione uma categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={String(cat.id)}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.category?.id && <p className="text-sm text-red-500">{errors.category.id.message}</p>}
+          </div>
+        ) : (
+          <>
+            <div>
+              <Label>Nome da Nova Categoria</Label>
+              <Input {...register('category.name')} />
+              {errors.category?.name && <p className="text-sm text-red-500">{errors.category.name.message}</p>}
+            </div>
+            <div>
+              <Label>Descrição da Categoria (Opcional)</Label>
+              <Input {...register('category.description')} />
+              {errors.category?.description && <p className="text-sm text-red-500">{errors.category.description.message}</p>}
+            </div>
+          </>
+        )}
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
