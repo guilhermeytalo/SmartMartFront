@@ -28,11 +28,16 @@ export default function ProductsPage() {
   const [openProductDialog, setOpenProductDialog] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const reloadData = async () => {
+    setLoading(true);
+    const products = await getData();
+    setData(products);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    getData().then((products) => {
-      setData(products);
-      setLoading(false);
-    });
+    reloadData();
   }, []);
 
 
@@ -49,7 +54,12 @@ export default function ProductsPage() {
         <DataTable columns={columns} data={data} />
       )}
 
-      <ProductDialog open={openProductDialog} onOpenChange={setOpenProductDialog} />
+      <ProductDialog open={openProductDialog}
+        onOpenChange={(open) => {
+          setOpenProductDialog(open);
+          if (!open) reloadData();
+        }} 
+      />
       <UploadDialog open={openUploadDialog} onOpenChange={setOpenUploadDialog} />
     </div>
   );

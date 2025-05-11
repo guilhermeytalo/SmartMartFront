@@ -21,7 +21,7 @@ export class ProductRepository implements IProductRepository {
 async create(product: Omit<Product, "id">): Promise<ApiResponse<Product>> {
   try {
     const response = await apiClient.post("/products", product);
-    return { success: true, data: response.data };
+    return { success: true, data: response };
   } catch (error) {
     console.error("Erro ao criar os produto(s):", error);
     return { success: false, error: "Erro ao criar os produto(s)." };

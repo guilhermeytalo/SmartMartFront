@@ -11,12 +11,11 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { useCreateProduct } from '@app/use-cases/useCreateProduct';
-
 import { CategoryRepository } from '@infra/http/repositories/CategoryRepository';
 
 const categorySchema = z.object({
   id: z.number().int().optional(),
-  name: z.string().min(1, 'Nome da categoria é obrigatório'),
+  name: z.string().min(1, 'Nome da categoria é obrigatório').optional(),
   description: z.string().optional(),
 });
 
@@ -57,47 +56,71 @@ export function ProductForm({ onSubmitSuccess }: Props) {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [categoryOption, setCategoryOption] = useState<'existing' | 'new'>('existing');
 
+  const fetchCategories = async () => {
+    const categoryRepo = new CategoryRepository();
+    const response = await categoryRepo.findAll();
+
+    if (response.success && response.data) {
+      setCategories(response.data.filter((category: { id?: number }) => category.id !== undefined) as { id: number; name: string }[]);
+    } else {
+      console.error(response.error || 'Erro ao carregar categorias');
+    }
+  };
+  
   useEffect(() => {
-    const fetchCategories = async () => {
-      const categoryRepo = new CategoryRepository();
-      const response = await categoryRepo.findAll();
-
-      if (response.success && response.data) {
-        setCategories(response.data.filter((category: { id?: number }) => category.id !== undefined) as { id: number; name: string }[]);
-      } else {
-        console.error(response.error || 'Erro ao carregar categorias');
-      }
-    };
-
     fetchCategories();
   }, []);
 
   const productRepo = useCreateProduct();
+  
   const onSubmit = async (data: ProductFormData) => {
     try {
-      if (data.category.id) {
-        delete data.category.name;
-        delete data.category.description;
+      let productData;
+      
+      if (categoryOption === 'existing') {
+        productData = {
+          ...data,
+          category: {
+            id: data.category.id
+          }
+        };
+      } else {
+        productData = {
+          ...data,
+          category: {
+            name: data.category.name,
+            description: data.category.description || ''
+          }
+        };
       }
-      else if (data.category.name && !data.category.id) {
-        delete data.category.id;
-        delete data.category.description;
-      }
-
-      const response = await productRepo(data);
+      
+      console.log('Dados a serem enviados:', productData);
+      const response = await productRepo(productData);
 
       if (response) {
         reset();
         onSubmitSuccess();
       } else {
-        console.error('Erro ao criar produto:');
+        console.error('Erro ao criar produto');
       }
     } catch (error) {
       console.error('Erro ao enviar formulário:', error);
     }
   };
 
-  const selectedCategoryId = watch('category.id');
+  const handleCategoryOptionChange = (value: 'existing' | 'new') => {
+    setCategoryOption(value);
+    
+    if (value === 'existing') {
+      setValue('category.id', undefined);
+      setValue('category.name', '');
+      setValue('category.description', '');
+    } else {
+      setValue('category.id', undefined);
+      setValue('category.name', '');
+      setValue('category.description', '');
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -138,7 +161,10 @@ export function ProductForm({ onSubmitSuccess }: Props) {
         <RadioGroup
           defaultValue="existing"
           className="flex gap-4"
-          onValueChange={(value: 'existing' | 'new') => setCategoryOption(value)}
+          value={categoryOption}
+          onValueChange={(value: 'existing' | 'new') => 
+            handleCategoryOptionChange(value)
+          }
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="existing" id="existing" />
@@ -150,18 +176,19 @@ export function ProductForm({ onSubmitSuccess }: Props) {
           </div>
         </RadioGroup>
 
-        {categoryOption === 'existing' ? (
+        {categoryOption === 'existing' && (
           <div>
             <Label>Categoria</Label>
             <Select
               onValueChange={(value) => {
-                setValue('category.id', Number(value));
-                const selectedCat = categories.find(cat => cat.id === Number(value));
-                if (selectedCat) {
-                  setValue('category.name', selectedCat.name);
+                const selectedId = parseInt(value);
+                const selectedCategory = categories.find(cat => cat.id === selectedId);
+                
+                if (selectedCategory) {
+                  setValue('category.id', selectedId);
+                  setValue('category.name', selectedCategory.name);
                 }
               }}
-              value={selectedCategoryId ? String(selectedCategoryId) : undefined}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione uma categoria" />
@@ -176,7 +203,9 @@ export function ProductForm({ onSubmitSuccess }: Props) {
             </Select>
             {errors.category?.id && <p className="text-sm text-red-500">{errors.category.id.message}</p>}
           </div>
-        ) : (
+        )}
+
+        {categoryOption === 'new' && (
           <>
             <div>
               <Label>Nome da Nova Categoria</Label>
