@@ -1,21 +1,55 @@
 'use client';
-import { Button } from "@/components/ui/button";
 import { ProductDialog } from "@/components/dialogs/ProductDialog";
 import { UploadDialog } from "@/components/dialogs/UploadDialog";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+
+import { Product } from "@domain/entities/Product";
+
+import { ProductRepository } from "@infra/http/repositories/ProductRepository";
+
+async function getData(): Promise<Product[]> {
+  const repositorie = new ProductRepository;
+  const productsList = await repositorie.findAll();
+  if (!productsList.success) {
+    console.error("Error fetching products:", productsList.error);
+    return [];
+  }
+  
+  return productsList.data!.map(product => ({
+    ...product,
+    categoryId: product.category_id,
+  }));
+}
 
 export default function ProductsPage() {
+  const [data, setData] = useState<Product[]>([]);
   const [openProductDialog, setOpenProductDialog] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getData().then((products) => {
+      setData(products);
+      setLoading(false);
+    });
+  }, []);
+
 
   return (
     <div className="p-6">
-      <div className="flex justify-between mb-4">
+      <div className="flex flex-col sm:flex-row justify-end mb-4 gap-2">
         <Button onClick={() => setOpenProductDialog(true)}>Novo Produto</Button>
         <Button variant="outline" onClick={() => setOpenUploadDialog(true)}>Importar CSV</Button>
       </div>
 
-      {/* Aqui entraria a tabela e os filtros */}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+          <DataTable columns={columns} data={data} />
+      )}
 
       <ProductDialog open={openProductDialog} onOpenChange={setOpenProductDialog} />
       <UploadDialog open={openUploadDialog} onOpenChange={setOpenUploadDialog} />
