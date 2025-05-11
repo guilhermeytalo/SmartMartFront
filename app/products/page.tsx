@@ -55,7 +55,7 @@ export default function ProductsPage() {
       )}
 
       <ProductDialog open={openProductDialog}
-        onOpenChange={(open) => {
+        onOpenChangeAction={(open) => {
           setOpenProductDialog(open);
           if (!open) reloadData();
         }} 

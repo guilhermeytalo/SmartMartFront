@@ -4,17 +4,17 @@ import { ProductForm } from "@/components/forms/ProductForm";
 
 interface Props {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChangeAction: (open: boolean) => void;
 }
 
-export function ProductDialog({ open, onOpenChange }: Props) {
+export function ProductDialog({ open, onOpenChangeAction }: Props) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Novo Produto</DialogTitle>
         </DialogHeader>
-        <ProductForm onSubmitSuccess={() => onOpenChange(false)} />
+        <ProductForm onSubmitSuccessAction={() => onOpenChangeAction(false)} />
       </DialogContent>
     </Dialog>
   );

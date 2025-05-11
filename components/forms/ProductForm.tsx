@@ -17,7 +17,13 @@ const categorySchema = z.object({
   id: z.number().int().optional(),
   name: z.string().min(1, 'Nome da categoria é obrigatório').optional(),
   description: z.string().optional(),
-});
+}).refine(
+  (category) => category.id || (category.name && category.name.trim() !== ''),
+  {
+    message: 'Selecione uma categoria existente.',
+    path: ['id']
+  }
+);
 
 const productSchema = z.object({
   name: z.string().min(1, 'Nome obrigatório'),
@@ -31,15 +37,14 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>;
 
 interface Props {
-  onSubmitSuccess: () => void;
+  onSubmitSuccessAction: () => void;
 }
 
-export function ProductForm({ onSubmitSuccess }: Props) {
+export function ProductForm({ onSubmitSuccessAction }: Props) {
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
@@ -99,7 +104,7 @@ export function ProductForm({ onSubmitSuccess }: Props) {
 
       if (response) {
         reset();
-        onSubmitSuccess();
+        onSubmitSuccessAction();
       } else {
         console.error('Erro ao criar produto');
       }
