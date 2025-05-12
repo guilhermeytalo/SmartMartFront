@@ -18,7 +18,7 @@ import {
     icon: ChartLine,
   },
   {
-    title: "Produtos",
+    title: "Products",
     url: "products",
     icon: Package,
   },

@@ -9,15 +9,15 @@ import { CategoryType } from "@domain/entities/Category"
 export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "name",
-    header: "Nome",
+    header: "Name",
   },
   {
     accessorKey: "description",
-    header: "Descrição",
+    header: "Description",
   },
   {
     accessorKey: "price",
-    header: "Preço",
+    header: "Price",
   },
   {
     accessorKey: "categoryId",
@@ -28,7 +28,7 @@ export const columns: ColumnDef<Product>[] = [
           onClick={() => {
             column.toggleSorting(column.getIsSorted() === "asc")
           }}>
-          Categoria
+          Category
           <ArrowUpDown />
         </Button>
       )
@@ -40,14 +40,14 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "brand",
-    header: "Marca",
+    header: "Brand",
   },
   {
     accessorKey: "quantity",
-    header: "Quantidade",
+    header: "Quantity",
   },
   {
     accessorKey: "profit",
-    header: "Lucro",
+    header: "Profit",
   }
 ]

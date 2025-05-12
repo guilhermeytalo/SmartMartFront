@@ -12,7 +12,7 @@ export function ProductDialog({ open, onOpenChangeAction }: Props) {
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Novo Produto</DialogTitle>
+          <DialogTitle>New Product</DialogTitle>
         </DialogHeader>
         <ProductForm onSubmitSuccessAction={() => onOpenChangeAction(false)} />
       </DialogContent>

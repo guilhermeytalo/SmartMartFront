@@ -44,7 +44,7 @@ export default function ProductsPage() {
   return (
     <div className="p-6">
       <div className="flex flex-col sm:flex-row justify-end mb-4 gap-2">
-        <Button onClick={() => setOpenProductDialog(true)}>Novo Produto</Button>
+        <Button onClick={() => setOpenProductDialog(true)}>New Product</Button>
         <Button variant="outline" onClick={() => setOpenUploadDialog(true)}>Importar CSV</Button>
       </div>
 
