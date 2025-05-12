@@ -1,11 +1,6 @@
 'use client';
-import ProductsPage from "./products/page";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-
-  return (
-    <div className="p-6">
-      <ProductsPage />
-    </div>
-  );
+  redirect('/dashboard');
 }
