@@ -47,7 +47,7 @@ export function PaginationControls({
 
   return (
     <div className="flex items-center justify-between w-full mt-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-[30%]">
         <p className="text-sm text-muted-foreground">
           Página {currentPage} de {totalPages}
         </p>
@@ -56,7 +56,7 @@ export function PaginationControls({
           value={pageSize.toString()}
           onValueChange={(value) => onPageSizeChange(Number(value))}
         >
-          <SelectTrigger className="w-16 h-8">
+          <SelectTrigger className="w-[30%] h-8">
             <SelectValue placeholder={pageSize} />
           </SelectTrigger>
           <SelectContent>
