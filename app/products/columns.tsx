@@ -4,6 +4,7 @@ import { Button } from "@components/ui/button"
 import { Product } from "@domain/entities/Product"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
+import { CategoryType } from "@domain/entities/Category"
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -32,7 +33,10 @@ export const columns: ColumnDef<Product>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("categoryId")}</div>,
+    cell: ({ row }) => {
+      const categoryId = row.getValue<number>("categoryId");
+      return <div>{CategoryType[categoryId] || "Unknown"}</div>;
+    },
   },
   {
     accessorKey: "brand",
