@@ -99,7 +99,7 @@ export function ProfitDonutChart() {
                 data={chartData}
                 dataKey="profit"
                 nameKey="label"
-                innerRadius={60}
+                innerRadius={75}
                 strokeWidth={5}
               >
                 <Label
@@ -112,13 +112,13 @@ export function ProfitDonutChart() {
                           textAnchor="middle"
                           dominantBaseline="middle"
                         >
-                          <tspan
+                            <tspan
                             x={viewBox.cx}
                             y={viewBox.cy}
                             className="fill-foreground text-3xl font-bold"
-                          >
-                            ${(totalProfit / 1000).toFixed(1)}k
-                          </tspan>
+                            >
+                            {`R$ ${(totalProfit / 1000).toFixed(1)}k`}
+                            </tspan>
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 24}
