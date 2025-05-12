@@ -143,11 +143,11 @@ export function DataTable<TData, TValue>({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All brands</SelectItem>
-            {Array.from(new Set(data.map((item: any) => item.brand)))
+            {Array.from(new Set(data.map((item) => (item as { brand: string }).brand)))
               .sort()
               .map((brand) => (
-                <SelectItem key={brand as string} value={brand as string}>
-                  {brand as string}
+                <SelectItem key={brand} value={brand}>
+                  {brand}
                 </SelectItem>
               ))}
           </SelectContent>
