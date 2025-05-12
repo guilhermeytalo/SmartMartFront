@@ -8,3 +8,8 @@ export interface ApiProduct {
   quantity: number;
   profit: number;
 }
+
+export interface PaginatedApiProductResponse {
+  items: ApiProduct[];
+  total: number;
+}
