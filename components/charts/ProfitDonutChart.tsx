@@ -6,22 +6,29 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { processSalesData } from "@/utils/process-sales-data"
 import { useEffect, useState } from "react"
+import { parse } from 'papaparse'
+import { ChartDataItem, ProductData } from "@domain/entities/Charts"
 
 const colors = [
-  "hsl(var(--chart-1))",
-  "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
   "hsl(var(--chart-6))",
   "hsl(var(--chart-7))",
   "hsl(var(--chart-8))",
   "hsl(var(--chart-9))",
-  "hsl(var(--chart-10))",
+  "hsl(var(--chart-20))",
+  "hsl(var(--chart-11))",
+  "hsl(var(--chart-12))",
+  "hsl(var(--chart-13))",
+  "hsl(var(--chart-14))",
+  "hsl(var(--chart-15))",
+  "hsl(var(--chart-16))",
+  "hsl(var(--chart-17))",
+  "hsl(var(--chart-18))",
+  "hsl(var(--chart-19))",
+  "hsl(var(--chart-20))",
 ];
 
 export function ProfitDonutChart() {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<ChartDataItem[]>([]);
   const [chartConfig, setChartConfig] = useState<ChartConfig>({ profit: { label: "Profit" } });
   const [totalProfit, setTotalProfit] = useState(0);
 
@@ -30,39 +37,39 @@ export function ProfitDonutChart() {
       try {
         const response = await fetch('/sales.csv');
         const csvText = await response.text();
-        
-        const salesData = await new Promise<any[]>((resolve, reject) => {
-          const { parse } = require('papaparse');
+        const salesData = await new Promise<ProductData[]>((resolve, reject) => {
           parse(csvText, {
             header: true,
             dynamicTyping: true,
-            complete: (results: any) => {
-              resolve(results.data);
+            complete: (results) => {
+              resolve(results.data as ProductData[]);
             },
-            error: (error: any) => reject(error)
+            error: (error: Error) => reject(error)
           });
         });
 
-        const { productData } = processSalesData(salesData);
+        const { productData } = processSalesData(salesData) as { productData: ProductData[] };
 
-        const preparedChartData = productData.map((product: any, index: number) => ({
-          product_id: product.product_id,
+        const preparedChartData: { product_id: string; profit: number; fill: string; label: string }[] = productData.map((product, index) => ({
+          product_id: String(product.product_id),
           profit: product.total_profit,
           fill: colors[index % colors.length],
           label: `Product ${product.product_id}`
         }));
 
+        console.log('Prepared Chart Data:', preparedChartData);
+
         const preparedChartConfig = {
           profit: {
             label: "Profit",
           },
-          ...productData.reduce((acc: Record<string, any>, product: any, index: number) => {
-            acc[`product_${product.product_id}`] = {
-              label: `Product ${product.product_id}`,
+          ...productData.reduce<Record<string, { label: string; color: string }>>((acc, product, index) => {
+            acc[`product_${(product as ProductData).product_id}`] = {
+              label: `Product ${(product as ProductData).product_id}`,
               color: colors[index % colors.length],
             };
             return acc;
-          }, {} as Record<string, any>)
+          }, {})
         } satisfies ChartConfig;
 
         const calculatedTotalProfit = preparedChartData.reduce((acc, curr) => acc + curr.profit, 0);
@@ -112,13 +119,13 @@ export function ProfitDonutChart() {
                           textAnchor="middle"
                           dominantBaseline="middle"
                         >
-                            <tspan
+                          <tspan
                             x={viewBox.cx}
                             y={viewBox.cy}
                             className="fill-foreground text-3xl font-bold"
-                            >
+                          >
                             {`R$ ${(totalProfit / 1000).toFixed(1)}k`}
-                            </tspan>
+                          </tspan>
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 24}

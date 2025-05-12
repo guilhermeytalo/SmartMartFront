@@ -90,7 +90,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
           category: {
             id: data.category.id
           }
-        };
+        } as Omit<ProductFormData, 'category'> & { category: { id: number } };
       } else {
         productData = {
           ...data,
@@ -101,7 +101,10 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
         };
       }
 
-      const response = await productRepo(productData);
+      const response = await productRepo({
+        ...productData,
+        categoryId: categoryOption === 'existing' && data.category.id ? data.category.id : 0,
+      });
 
       if (response) {
         toast.success('Produto criado com sucesso.', {

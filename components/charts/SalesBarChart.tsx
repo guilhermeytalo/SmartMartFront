@@ -6,6 +6,7 @@ import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent } from "@/
 import { processSalesData } from "@/utils/process-sales-data"
 import { useEffect, useState } from "react"
 import { parseCSV } from "@/utils/parse-csv"
+import { MonthlyData } from "@domain/entities/Charts"
 
 const chartConfig = {
   quantity: {
@@ -19,13 +20,13 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function SalesBarChart() {
-  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
 
   useEffect(() => {
     async function loadData() {
       try {
         const salesData = await parseCSV('/sales.csv');
-        const { monthlyData } = processSalesData(salesData);
+        const { monthlyData } = processSalesData(salesData) as { monthlyData: MonthlyData[] };
         setMonthlyData(monthlyData);
       } catch (error) {
         console.error('Error loading sales data:', error);

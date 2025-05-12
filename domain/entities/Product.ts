@@ -8,7 +8,7 @@ export interface Product {
   categoryId: number;
   brand: string;
   quantity: number;
-  profit: number;
+  profit?: number;
 }
 
 export type ProductFormData = {
