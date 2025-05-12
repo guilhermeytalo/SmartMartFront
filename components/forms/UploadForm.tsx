@@ -38,7 +38,7 @@ export function UploadForm({ onSubmitSuccessAction }: Props) {
         dismissible: true,
       });
       onSubmitSuccessAction();
-    } catch (err) {
+    } catch {
       setError('Erro ao processar o arquivo. Verifique se o CSV está no formato correto.');
     } finally {
       setLoading(false);
