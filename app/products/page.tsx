@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ProductDialog } from "@/components/dialogs/ProductDialog";
 import { UploadDialog } from "@/components/dialogs/UploadDialog";
 import { Button } from "@/components/ui/button";
+import { PaginationControls } from "@/components/table/PaginationControls";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -13,31 +14,50 @@ import { mapApiProductToProduct } from "@domain/mappers/ProductMapper";
 
 import { ProductRepository } from "@infra/http/repositories/ProductRepository";
 
-async function getData(): Promise<Product[]> {
-  const repositorie = new ProductRepository;
-  const productsList = await repositorie.findAll();
-  if (!productsList.success) {
-    console.error("Error fetching products:", productsList.error);
-    return [];
+async function getData(page: number, limit: number): Promise<{ products: Product[]; total: number }> {
+  const repository = new ProductRepository();
+  const response = await repository.findAll((page - 1) * limit, limit);
+
+  if (!response.success || !response.data) {
+    console.error("Error fetching products:", response.error);
+    return { products: [], total: 0 };
   }
-  return productsList.data!.map(mapApiProductToProduct);
+
+  return {
+    products: response.data.items.map(mapApiProductToProduct) || [],
+    total: response.data.total,
+  };
 }
 
 export default function ProductsPage() {
   const [data, setData] = useState<Product[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [loading, setLoading] = useState(true);
   const [openProductDialog, setOpenProductDialog] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  const reloadData = async () => {
+  const reloadData = async (pageToLoad = page, pageSize = limit) => {
     setLoading(true);
-    const products = await getData();
+    const { products, total } = await getData(pageToLoad, pageSize);
     setData(products);
+    setTotal(total);
+    setPage(pageToLoad);
+    setLimit(pageSize);
     setLoading(false);
   };
 
+  const handlePageChange = (newPage: number) => {
+    reloadData(newPage, limit);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    reloadData(1, newSize);
+  };
+
   useEffect(() => {
-    reloadData();
+    reloadData(1);
   }, []);
 
 
@@ -48,22 +68,29 @@ export default function ProductsPage() {
         <Button variant="outline" onClick={() => setOpenUploadDialog(true)}>Importar CSV</Button>
       </div>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <DataTable columns={columns} data={data} />
-      )}
+      <>
+        <DataTable columns={columns} data={data} isLoading={loading} />
+        
+        <PaginationControls
+          currentPage={page}
+          totalPages={Math.max(1, Math.ceil(total / limit))}
+          pageSize={limit}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+      </>
 
-      <ProductDialog open={openProductDialog}
+      <ProductDialog
+        open={openProductDialog}
         onOpenChangeAction={(open) => {
           setOpenProductDialog(open);
           if (!open) reloadData();
         }}
       />
-      <UploadDialog 
-        open={openUploadDialog} 
-        onOpenChangeAction={setOpenUploadDialog} 
-        reloadDataAction={reloadData} 
+      <UploadDialog
+        open={openUploadDialog}
+        onOpenChangeAction={setOpenUploadDialog}
+        reloadDataAction={() => reloadData(page)}
       />
     </div>
   );

@@ -1,17 +1,15 @@
 import { apiClient } from '@/infra/http/api';
 
-import { ApiProduct } from "@domain/entities/ApiProduct";
+import { PaginatedApiProductResponse } from "@domain/entities/ApiProduct";
 import { Product } from "@domain/entities/Product";
 import { IProductRepository } from "@domain/repositories/IProductRepository";
 import { ApiResponse } from "@domain/repositories/Response";
 
-
 export class ProductRepository implements IProductRepository {
-  async findAll(): Promise<ApiResponse<ApiProduct[]>> {
+  async findAll(skip = 0, limit = 10): Promise<ApiResponse<PaginatedApiProductResponse[]>> {
     try {
-      const data = await apiClient.get("/products");
-      return { success: true, data }
-
+      const data = await apiClient.get(`/products?skip=${skip}&limit=${limit}`);
+      return { success: true, data };
     } catch (error) {
       console.error("Erro ao carregar os produtos:", error);
       return { success: false, error: 'Erro ao carregar os produtos' };
