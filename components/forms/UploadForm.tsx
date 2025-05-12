@@ -59,7 +59,7 @@ export function UploadForm({ onSubmitSuccessAction }: Props) {
       link.download = 'sample_products.csv';
       link.click();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       toast.error('Error downloading the CSV template.');
     }
   };

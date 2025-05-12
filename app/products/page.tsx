@@ -41,6 +41,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     reloadData(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
