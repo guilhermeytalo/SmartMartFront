@@ -3,31 +3,14 @@ import { useEffect, useState } from "react";
 
 import { ProductDialog } from "@/components/dialogs/ProductDialog";
 import { UploadDialog } from "@/components/dialogs/UploadDialog";
-import { Button } from "@/components/ui/button";
 import { PaginationControls } from "@/components/table/PaginationControls";
+import { Button } from "@/components/ui/button";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
 import { Product } from "@domain/entities/Product";
-import { mapApiProductToProduct } from "@domain/mappers/ProductMapper";
-
-import { ProductRepository } from "@infra/http/repositories/ProductRepository";
-
-async function getData(page: number, limit: number): Promise<{ products: Product[]; total: number }> {
-  const repository = new ProductRepository();
-  const response = await repository.findAll((page - 1) * limit, limit);
-
-  if (!response.success || !response.data) {
-    console.error("Error fetching products:", response.error);
-    return { products: [], total: 0 };
-  }
-
-  return {
-    products: response.data.items.map(mapApiProductToProduct) || [],
-    total: response.data.total,
-  };
-}
+import { getData } from "@domain/services/ProductService";
 
 export default function ProductsPage() {
   const [data, setData] = useState<Product[]>([]);
