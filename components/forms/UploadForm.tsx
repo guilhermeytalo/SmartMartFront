@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useImportProducts } from '@app/use-cases/useImportProducts';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface Props {
   onSubmitSuccessAction: () => void;
@@ -26,12 +27,16 @@ export function UploadForm({ onSubmitSuccessAction }: Props) {
 
     setError(null);
     setLoading(true);
-    debugger
     try {
       const formData = new FormData();
       formData.append('file', file);
 
       await importProducts(formData)
+      toast.success('Produtos importados com sucesso.', {
+        duration: 3000,
+        position: 'top-right',
+        dismissible: true,
+      });
       onSubmitSuccessAction();
     } catch (err) {
       setError('Erro ao processar o arquivo. Verifique se o CSV está no formato correto.');

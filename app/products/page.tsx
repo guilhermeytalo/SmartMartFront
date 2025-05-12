@@ -58,9 +58,13 @@ export default function ProductsPage() {
         onOpenChangeAction={(open) => {
           setOpenProductDialog(open);
           if (!open) reloadData();
-        }} 
+        }}
       />
-      <UploadDialog open={openUploadDialog} onOpenChangeAction={setOpenUploadDialog} />
+      <UploadDialog 
+        open={openUploadDialog} 
+        onOpenChangeAction={setOpenUploadDialog} 
+        reloadDataAction={reloadData} 
+      />
     </div>
   );
 }

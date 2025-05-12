@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCreateProduct } from '@app/use-cases/useCreateProduct';
 import { CategoryRepository } from '@infra/http/repositories/CategoryRepository';
 
+import { toast } from 'sonner';
+
 const categorySchema = z.object({
   id: z.number().int().optional(),
   name: z.string().min(1, 'Nome da categoria é obrigatório').optional(),
@@ -71,17 +73,17 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
       console.error(response.error || 'Erro ao carregar categorias');
     }
   };
-  
+
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const productRepo = useCreateProduct();
-  
+
   const onSubmit = async (data: ProductFormData) => {
     try {
       let productData;
-      
+
       if (categoryOption === 'existing') {
         productData = {
           ...data,
@@ -98,23 +100,38 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
           }
         };
       }
-      
+
       const response = await productRepo(productData);
 
       if (response) {
+        toast.success('Produto criado com sucesso.', {
+          duration: 3000,
+          position: 'top-right',
+          dismissible: true,
+        });
         reset();
         onSubmitSuccessAction();
       } else {
+        toast.error('Erro ao criar produto.', {
+          duration: 3000,
+          position: 'top-right',
+          dismissible: true,
+        });
         console.error('Erro ao criar produto');
       }
     } catch (error) {
+      toast.error('Erro ao enviar formulário.', {
+        duration: 3000,
+        position: 'top-right',
+        dismissible: true,
+      });
       console.error('Erro ao enviar formulário:', error);
     }
   };
 
   const handleCategoryOptionChange = (value: 'existing' | 'new') => {
     setCategoryOption(value);
-    
+
     if (value === 'existing') {
       setValue('category.id', undefined);
       setValue('category.name', '');
@@ -166,7 +183,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
           defaultValue="existing"
           className="flex gap-4"
           value={categoryOption}
-          onValueChange={(value: 'existing' | 'new') => 
+          onValueChange={(value: 'existing' | 'new') =>
             handleCategoryOptionChange(value)
           }
         >
@@ -187,7 +204,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
               onValueChange={(value) => {
                 const selectedId = parseInt(value);
                 const selectedCategory = categories.find(cat => cat.id === selectedId);
-                
+
                 if (selectedCategory) {
                   setValue('category.id', selectedId);
                   setValue('category.name', selectedCategory.name);

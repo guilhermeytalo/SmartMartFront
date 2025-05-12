@@ -1,7 +1,9 @@
 "use client"
 
+import { Button } from "@components/ui/button"
 import { Product } from "@domain/entities/Product"
 import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -16,20 +18,32 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "price",
     header: "Preço",
   },
-    {
-        accessorKey: "categoryId",
-        header: "Categoria",
+  {
+    accessorKey: "categoryId",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => {
+            column.toggleSorting(column.getIsSorted() === "asc")
+          }}>
+          Categoria
+          <ArrowUpDown />
+        </Button>
+      )
     },
-    {
-        accessorKey: "brand",
-        header: "Marca",
-    },
-    {
-        accessorKey: "quantity",
-        header: "Quantidade",
-    },
-    {
-        accessorKey: "profit",
-        header: "Lucro",
-    }
+    cell: ({ row }) => <div className="lowercase">{row.getValue("categoryId")}</div>,
+  },
+  {
+    accessorKey: "brand",
+    header: "Marca",
+  },
+  {
+    accessorKey: "quantity",
+    header: "Quantidade",
+  },
+  {
+    accessorKey: "profit",
+    header: "Lucro",
+  }
 ]
