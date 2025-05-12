@@ -9,13 +9,8 @@ export default function DashboardPage() {
             <p className="mt-4">Welcome to the SmartMart Solutions Dashboard!</p>
 
             <div className="flex flex-wrap gap-4 mt-6">
-                <div>
-                    <SalesBarChart />
-                </div>
-
-                <div>
-                    <ProfitDonutChart />
-                </div>
+                <SalesBarChart />
+                <ProfitDonutChart />
             </div>
         </div>
     );
