@@ -10,8 +10,8 @@ export class ProductRepository implements IProductRepository {
       const response = await apiClient.get(`/products?page=${page}&per_page=${limit}`);
       return { success: true, data: response };
     } catch (error) {
-      console.error("Erro ao carregar os produtos:", error);
-      return { success: false, error: 'Erro ao carregar os produtos' };
+      console.error("Error Loading Products:", error);
+      return { success: false, error: 'Error Loading Products' };
     }
   }
 
@@ -20,8 +20,8 @@ export class ProductRepository implements IProductRepository {
       const response = await apiClient.post("/products", product);
       return { success: true, data: response };
     } catch (error) {
-      console.error("Erro ao criar os produto(s):", error);
-      return { success: false, error: "Erro ao criar os produto(s)." };
+      console.error("Error Creating Products:", error);
+      return { success: false, error: "Error Creating Products!" };
     }
   }
 
@@ -30,8 +30,8 @@ export class ProductRepository implements IProductRepository {
       const response = await apiClient.post("/products/import-csv", formData);
       return { success: true, data: response };
     } catch (error) {
-      console.error("Erro ao importar produtos do CSV:", error);
-      return { success: false, error: "Erro ao importar produtos do CSV." };
+      console.error("Error importing CSV Files", error);
+      return { success: false, error: "Error importing CSV Files!" };
     }
   }
 
@@ -40,8 +40,8 @@ export class ProductRepository implements IProductRepository {
       const response = await apiClient.get("/products/sample-csv", { responseType: 'text' });
       return { success: true, data: response };
     } catch (error) {
-      console.error("Erro ao baixar o CSV de exemplo:", error);
-      return { success: false, error: "Erro ao baixar o CSV de exemplo." };
+      console.error("Error Dowloading the CSV Example:", error);
+      return { success: false, error: "Error Dowloading the CSV Example!" };
     }
   }
 }

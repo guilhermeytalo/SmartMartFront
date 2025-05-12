@@ -17,22 +17,22 @@ import { toast } from 'sonner';
 
 const categorySchema = z.object({
   id: z.number().int().optional(),
-  name: z.string().min(1, 'Nome da categoria é obrigatório').optional(),
+  name: z.string().min(1, 'Category name is required').optional(),
   description: z.string().optional(),
 }).refine(
   (category) => category.id || (category.name && category.name.trim() !== ''),
   {
-    message: 'Selecione uma categoria existente.',
+    message: 'Select an existing category.',
     path: ['id']
   }
 );
 
 const productSchema = z.object({
-  name: z.string().min(1, 'Nome obrigatório'),
-  description: z.string().min(1, 'Descrição obrigatória'),
-  price: z.coerce.number().positive('Preço deve ser maior que 0'),
-  brand: z.string().min(1, 'Marca obrigatória'),
-  quantity: z.coerce.number().int().nonnegative('Quantidade deve ser positiva'),
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().min(1, 'Description is required'),
+  price: z.coerce.number().positive('Price must be higher than 0'),
+  brand: z.string().min(1, 'Brand is required'),
+  quantity: z.coerce.number().int().nonnegative('Quantity must be higher than 0'),
   category: categorySchema,
 });
 
