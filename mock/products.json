@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Samsung 65\" QLED TV",
+    "description": "65-inch 4K Smart TV with HDR",
+    "price": 1299.99,
+    "category_id": 2,
+    "brand": "Samsung",
+    "quantity": 10,
+    "profit": 5199.96
+  },
+  {
+    "id": 2,
+    "name": "Samsung 65\" QLED TV",
+    "description": "65-inch 4K Smart TV with HDR",
+    "price": 1299.99,
+    "category_id": 2,
+    "brand": "Samsung",
+    "quantity": 10,
+    "profit": 5199.96
+  },
+  {
+    "id": 3,
+    "name": "Samsung 65\" QLED TV",
+    "description": "65-inch 4K Smart TV with HDR",
+    "price": 1299.99,
+    "category_id": 2,
+    "brand": "Samsung",
+    "quantity": 10,
+    "profit": 5199.96
+  }
+]

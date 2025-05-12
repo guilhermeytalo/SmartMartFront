@@ -116,7 +116,24 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  :root {
+    --chart-1: 263 70% 50%;
+    --chart-2: 210 70% 50%;
+    --chart-3: 142 70% 50%;
+    --chart-4: 350 70% 50%;
+    --chart-5: 30 70% 50%;
+    --chart-6: 200 70% 50%;
+    --chart-7: 100 70% 50%;
+    --chart-8: 50 70% 50%;
+    --chart-9: 300 70% 50%;
+    --chart-10: 150 70% 50%;
+
+    --color-quantity: #2563eb;
+    --color-profit: #10b981;
   }
 }
