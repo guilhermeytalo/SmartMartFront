@@ -13,7 +13,7 @@ export function UploadDialog({ open, onOpenChangeAction, reloadDataAction }: Pro
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Importar Produtos via CSV</DialogTitle>
+          <DialogTitle>Import CSV Products</DialogTitle>
         </DialogHeader>
         <UploadForm onSubmitSuccessAction={() => {
           reloadDataAction();

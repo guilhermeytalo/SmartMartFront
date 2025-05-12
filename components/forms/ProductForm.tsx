@@ -17,22 +17,22 @@ import { toast } from 'sonner';
 
 const categorySchema = z.object({
   id: z.number().int().optional(),
-  name: z.string().min(1, 'Nome da categoria é obrigatório').optional(),
+  name: z.string().min(1, 'Category name is required').optional(),
   description: z.string().optional(),
 }).refine(
   (category) => category.id || (category.name && category.name.trim() !== ''),
   {
-    message: 'Selecione uma categoria existente.',
+    message: 'Select an existing category.',
     path: ['id']
   }
 );
 
 const productSchema = z.object({
-  name: z.string().min(1, 'Nome obrigatório'),
-  description: z.string().min(1, 'Descrição obrigatória'),
-  price: z.coerce.number().positive('Preço deve ser maior que 0'),
-  brand: z.string().min(1, 'Marca obrigatória'),
-  quantity: z.coerce.number().int().nonnegative('Quantidade deve ser positiva'),
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().min(1, 'Description is required'),
+  price: z.coerce.number().positive('Price must be higher than 0'),
+  brand: z.string().min(1, 'Brand is required'),
+  quantity: z.coerce.number().int().nonnegative('Quantity must be higher than 0'),
   category: categorySchema,
 });
 
@@ -70,7 +70,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
     if (response.success && response.data) {
       setCategories(response.data.filter((category: { id?: number }) => category.id !== undefined) as { id: number; name: string }[]);
     } else {
-      console.error(response.error || 'Erro ao carregar categorias');
+      console.error(response.error || 'Error loading categories');
     }
   };
 
@@ -107,7 +107,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
       });
 
       if (response) {
-        toast.success('Produto criado com sucesso.', {
+        toast.success('Product created successfully.', {
           duration: 3000,
           position: 'top-right',
           dismissible: true,
@@ -115,20 +115,20 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
         reset();
         onSubmitSuccessAction();
       } else {
-        toast.error('Erro ao criar produto.', {
+        toast.error('Error registering new product:', {
           duration: 3000,
           position: 'top-right',
           dismissible: true,
         });
-        console.error('Erro ao criar produto');
+        console.error('Error to register new product:', response);
       }
     } catch (error) {
-      toast.error('Erro ao enviar formulário.', {
+      toast.error('Error submitting the form.', {
         duration: 3000,
         position: 'top-right',
         dismissible: true,
       });
-      console.error('Erro ao enviar formulário:', error);
+      console.error('Error sending form:', error);
     }
   };
 
@@ -149,39 +149,39 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <Label>Nome</Label>
+        <Label className='pb-2'>Name</Label>
         <Input {...register('name')} />
         {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
       </div>
 
       <div>
-        <Label>Descrição</Label>
+        <Label className='pb-2'>Description</Label>
         <Input {...register('description')} />
         {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Preço</Label>
+          <Label className='pb-2'>Price</Label>
           <Input type="number" step="0.01" {...register('price')} />
           {errors.price && <p className="text-sm text-red-500">{errors.price.message}</p>}
         </div>
 
         <div>
-          <Label>Quantidade</Label>
+          <Label className='pb-2'>Quantity</Label>
           <Input type="number" {...register('quantity')} />
           {errors.quantity && <p className="text-sm text-red-500">{errors.quantity.message}</p>}
         </div>
       </div>
 
       <div>
-        <Label>Marca</Label>
+        <Label className='pb-2'>Brand</Label>
         <Input {...register('brand')} />
         {errors.brand && <p className="text-sm text-red-500">{errors.brand.message}</p>}
       </div>
 
       <div className="space-y-4">
-        <Label>Tipo de Categoria</Label>
+        <Label>Category Type</Label>
         <RadioGroup
           defaultValue="existing"
           className="flex gap-4"
@@ -192,17 +192,17 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="existing" id="existing" />
-            <Label htmlFor="existing">Categoria Existente</Label>
+            <Label htmlFor="existing">Existing Category</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="new" id="new" />
-            <Label htmlFor="new">Nova Categoria</Label>
+            <Label htmlFor="new">New Category</Label>
           </div>
         </RadioGroup>
 
         {categoryOption === 'existing' && (
           <div>
-            <Label>Categoria</Label>
+            <Label className='pb-2'>Category</Label>
             <Select
               onValueChange={(value) => {
                 const selectedId = parseInt(value);
@@ -215,7 +215,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecione uma categoria" />
+                <SelectValue placeholder="Select one categoria" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
@@ -232,12 +232,12 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
         {categoryOption === 'new' && (
           <>
             <div>
-              <Label>Nome da Nova Categoria</Label>
+              <Label>Category Name</Label>
               <Input {...register('category.name')} />
               {errors.category?.name && <p className="text-sm text-red-500">{errors.category.name.message}</p>}
             </div>
             <div>
-              <Label>Descrição da Categoria (Opcional)</Label>
+              <Label>Category Description (optional)</Label>
               <Input {...register('category.description')} />
               {errors.category?.description && <p className="text-sm text-red-500">{errors.category.description.message}</p>}
             </div>
@@ -246,7 +246,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
       </div>
 
       <Button type="submit" disabled={isSubmitting}>
-        Cadastrar Produto
+        Register Product
       </Button>
     </form>
   );
