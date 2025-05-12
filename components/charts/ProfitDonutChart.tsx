@@ -57,8 +57,6 @@ export function ProfitDonutChart() {
           label: `Product ${product.product_id}`
         }));
 
-        console.log('Prepared Chart Data:', preparedChartData);
-
         const preparedChartConfig = {
           profit: {
             label: "Profit",

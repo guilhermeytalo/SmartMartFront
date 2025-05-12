@@ -6,7 +6,7 @@ import { ApiProduct } from "@domain/entities/ApiProduct";
 const repository = new ProductRepository();
 
 export async function getData(page: number, limit: number): Promise<{ products: Product[]; total: number }> {
-  const response = await repository.findAll((page - 1) * limit, limit);
+  const response = await repository.findAll(page, limit);
 
   if (!response.success || !response.data) {
     console.error("Error fetching products:", response.error);
