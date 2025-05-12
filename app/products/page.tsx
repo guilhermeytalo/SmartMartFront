@@ -44,24 +44,28 @@ export default function ProductsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   return (
     <div className="p-6">
-      <div className="flex flex-col sm:flex-row justify-end mb-4 gap-2">
-        <Button onClick={() => setOpenProductDialog(true)}>New Product</Button>
-        <Button variant="outline" onClick={() => setOpenUploadDialog(true)}>Importar CSV</Button>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Products</h1>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button onClick={() => setOpenProductDialog(true)}>New Product</Button>
+          <Button variant="outline" onClick={() => setOpenUploadDialog(true)}>Import CSV</Button>
+        </div>
       </div>
 
       <>
         <DataTable columns={columns} data={data} isLoading={loading} />
-        
-        <PaginationControls
-          currentPage={page}
-          totalPages={Math.max(1, Math.ceil(total / limit))}
-          pageSize={limit}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
-        />
+
+        <div className="mt-4">
+          <PaginationControls
+            currentPage={page}
+            totalPages={Math.max(1, Math.ceil(total / limit))}
+            pageSize={limit}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        </div>
       </>
 
       <ProductDialog
