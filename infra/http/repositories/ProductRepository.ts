@@ -37,4 +37,14 @@ export class ProductRepository implements IProductRepository {
       return { success: false, error: "Erro ao importar produtos do CSV." };
     }
   }
+
+  async sampleCSV(): Promise<ApiResponse<string>> {
+    try {
+      const response = await apiClient.get("/products/sample-csv", { responseType: 'text' });
+      return { success: true, data: response };
+    } catch (error) {
+      console.error("Erro ao baixar o CSV de exemplo:", error);
+      return { success: false, error: "Erro ao baixar o CSV de exemplo." };
+    }
+  }
 }
