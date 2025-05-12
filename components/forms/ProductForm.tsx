@@ -149,33 +149,33 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <Label>Nome</Label>
+        <Label className='pb-2'>Nome</Label>
         <Input {...register('name')} />
         {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
       </div>
 
       <div>
-        <Label>Descrição</Label>
+        <Label className='pb-2'>Descrição</Label>
         <Input {...register('description')} />
         {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Preço</Label>
+          <Label className='pb-2'>Preço</Label>
           <Input type="number" step="0.01" {...register('price')} />
           {errors.price && <p className="text-sm text-red-500">{errors.price.message}</p>}
         </div>
 
         <div>
-          <Label>Quantidade</Label>
+          <Label className='pb-2'>Quantidade</Label>
           <Input type="number" {...register('quantity')} />
           {errors.quantity && <p className="text-sm text-red-500">{errors.quantity.message}</p>}
         </div>
       </div>
 
       <div>
-        <Label>Marca</Label>
+        <Label className='pb-2'>Marca</Label>
         <Input {...register('brand')} />
         {errors.brand && <p className="text-sm text-red-500">{errors.brand.message}</p>}
       </div>
@@ -202,7 +202,7 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
 
         {categoryOption === 'existing' && (
           <div>
-            <Label>Categoria</Label>
+            <Label className='pb-2'>Categoria</Label>
             <Select
               onValueChange={(value) => {
                 const selectedId = parseInt(value);
