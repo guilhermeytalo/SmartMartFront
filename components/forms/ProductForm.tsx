@@ -1,6 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -232,12 +232,12 @@ export function ProductForm({ onSubmitSuccessAction }: Props) {
         {categoryOption === 'new' && (
           <>
             <div>
-              <Label>Category Name</Label>
+              <Label className='pb-2'>Category Name</Label>
               <Input {...register('category.name')} />
               {errors.category?.name && <p className="text-sm text-red-500">{errors.category.name.message}</p>}
             </div>
             <div>
-              <Label>Category Description (optional)</Label>
+              <Label className='pb-2'>Category Description (optional)</Label>
               <Input {...register('category.description')} />
               {errors.category?.description && <p className="text-sm text-red-500">{errors.category.description.message}</p>}
             </div>

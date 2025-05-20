@@ -6,14 +6,17 @@ import { UploadDialog } from "@/components/dialogs/UploadDialog";
 import { PaginationControls } from "@/components/table/PaginationControls";
 import { Button } from "@/components/ui/button";
 
-import { columns } from "./columns";
+import { createColumns } from "./columns";
 import { DataTable } from "./data-table";
 
+import { Category } from "@domain/entities/Category";
 import { Product } from "@domain/entities/Product";
+import { getCategories } from "@domain/services/CategorieService";
 import { getData } from "@domain/services/ProductService";
 
 export default function ProductsPage() {
   const [data, setData] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -21,8 +24,14 @@ export default function ProductsPage() {
   const [openProductDialog, setOpenProductDialog] = useState(false);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
 
+  const fetchCategories = async () => {
+    const response = await getCategories();
+    setCategories(response)
+  };
+
   const reloadData = async (pageToLoad = page, pageSize = limit) => {
     setLoading(true);
+    fetchCategories();
     const { products, total } = await getData(pageToLoad, pageSize);
     setData(products);
     setTotal(total);
@@ -43,6 +52,8 @@ export default function ProductsPage() {
     reloadData(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const columns = createColumns({ categories });
 
   return (
     <div className="p-6">
