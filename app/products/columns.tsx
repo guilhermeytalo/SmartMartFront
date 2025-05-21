@@ -1,15 +1,19 @@
 "use client"
 
 import { Button } from "@components/ui/button"
+import { Category } from "@domain/entities/Category"
 import { Product } from "@domain/entities/Product"
-import { ColumnDef } from "@tanstack/react-table"
+import { Column, ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
-import { CategoryType } from "@domain/entities/Category"
 
-export const columns: ColumnDef<Product>[] = [
+interface ColumnsProps {
+  categories: Category[]
+}
+
+export const createColumns = ({ categories }: ColumnsProps): ColumnDef<Product>[] => [
   {
     accessorKey: "name",
-    header: ({ column }) => {
+    header: ({ column }: { column: Column<Product, unknown> }) => {
       return (
         <Button
           variant="ghost"
@@ -28,7 +32,7 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "price",
-    header: ({ column }) => {
+    header: ({ column }: { column: Column<Product, unknown> }) => {
       return (
         <Button
           variant="ghost"
@@ -39,8 +43,8 @@ export const columns: ColumnDef<Product>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
+    cell: ({ row }: { row: { getValue: (key: string) => unknown } }) => {
+      const price = parseFloat(row.getValue("price") as string);
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -51,7 +55,7 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "categoryId",
-    header: ({ column }) => {
+    header: ({ column }: { column: Column<Product, unknown> }) => {
       return (
         <Button
           variant="ghost"
@@ -63,19 +67,23 @@ export const columns: ColumnDef<Product>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => {
+    cell: ({ row }: { row: { getValue: (key: string) => unknown } }) => {
       const categoryId = Number(row.getValue("categoryId"));
-      return <div>{CategoryType[categoryId] || "Unknown"}</div>;
+      const category = categories.find(cat => cat.id === categoryId);
+      return <div>{category?.name || "Unknown"}</div>;
     },
-    filterFn: (row, id, value) => {
+    filterFn: (row: { getValue: (id: string) => unknown }, id: string, value: unknown) => {
       if (value === undefined || value === "all") return true;
       const rowValue = Number(row.getValue(id));
       return rowValue === Number(value);
     },
+    meta: {
+      categories
+    }
   },
   {
     accessorKey: "brand",
-    header: ({ column }) => {
+    header: ({ column }: { column: Column<Product, unknown> }) => {
       return (
         <Button
           variant="ghost"
@@ -90,7 +98,7 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "quantity",
-    header: ({ column }) => {
+    header: ({ column }: { column: Column<Product, unknown> }) => {
       return (
         <Button
           variant="ghost"
@@ -104,7 +112,7 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "profit",
-    header: ({ column }) => {
+    header: ({ column }: { column: Column<Product, unknown> }) => {
       return (
         <Button
           variant="ghost"
@@ -115,8 +123,8 @@ export const columns: ColumnDef<Product>[] = [
         </Button>
       )
     },
-    cell: ({ row }) => {
-      const profit = parseFloat(row.getValue("profit"));
+    cell: ({ row }: { row: { getValue: (key: string) => unknown } }) => {
+      const profit = parseFloat(row.getValue("profit") as string);
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",

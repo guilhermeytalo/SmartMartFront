@@ -1,24 +1,15 @@
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
-  useReactTable,
+  getSortedRowModel,
   SortingState,
-  ColumnFiltersState,
+  useReactTable,
 } from "@tanstack/react-table"
-import React, { useState } from "react"
+import { useState } from "react"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -27,7 +18,16 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { CategoryType } from "@domain/entities/Category"
+import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Category, CategoryOption } from "@domain/entities/Category"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -57,11 +57,11 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  const categoryOptions = Object.entries(CategoryType)
-    .map(([key, value]) => ({
-      value: key,
-      label: value as string
-    }))
+  const categoryColumn = columns[3] as ColumnDef<TData, TValue>
+  const categoryOptions: CategoryOption[] = (categoryColumn.meta as { categories: Category[] })?.categories?.map((category: Category) => ({
+    value: String(category.id),
+    label: category.name
+  })) || []
 
   if (isLoading) {
     return (
@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All categories</SelectItem>
-            {categoryOptions.map((category) => (
+            {categoryOptions.map((category: CategoryOption) => (
               <SelectItem key={category.value} value={category.value}>
                 {category.label}
               </SelectItem>

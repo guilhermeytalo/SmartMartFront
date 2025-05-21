@@ -4,10 +4,7 @@ export interface Category {
   description?: string;
 }
 
-export const CategoryType: Record<number, string> = {
-  1: "TVs",
-  2: "Refrigerators",
-  3: "Laptops",
-  4: "Microwaves",
-  5: "Smartphones",
-};
+export interface CategoryOption {
+  value: string
+  label: string
+}
